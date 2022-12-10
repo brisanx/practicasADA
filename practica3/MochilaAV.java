@@ -9,50 +9,43 @@ import java.util.Comparator;
  *
  */
 public class MochilaAV extends Mochila {
-	private static class ItemComparator implements Comparator<Item>{
+    public SolucionMochila resolver(ProblemaMochila pm){
+
+        ArrayList<Item> items = pm.getItems();
+        int pesoMax = pm.pesoMaximo;
+        int valorMochila = 0;
+        int [] valores = new int[pm.size()];
+        items.sort(new Comparator<Item>() {
+
         @Override
-        //Nuevo método para realizar la comparación entre items
-        public int compare(Item item1, Item2){
-            int compare = 0;
+        public int compare(Item o1, Item o2) {
+            double ratio1 = (double) o1.valor/o2.peso;
+            double ratio2 = (double) o2.valor/o2.peso;
 
-            // Comparamos las densidades de los items
-            double densidad1 = (double) ...;
-            double densidad2 = (double) ...;
-
-            if (...) {
-                compare = -1;
-            } else if (...){
-                compare = +1;
-            } else if (...) {
-                compare = -1;
-            } else if (...) {
-                compare = +1;
+            if(ratio1 > ratio2){
+                return -1;
+            } else if (ratio1 < ratio2) {
+                return 1;
+            }
+            else 
+            {
+                if(o1.valor >= o2.valor){
+                    return -1;
+                } else {
+                    return 1;
+                }
             }
         }
-    }
+        });
 
-	public SolucionMochila resolver(ProblemaMochila pm) {
-		SolucionMochila sm=null;
-		// A resolver por el alumno
-		int n = pm.size();
-
-		 //Inicializamos solución, su peso y su valor
-		 int[] solucion = new int[n];
-		 int pesoTotal = 0;
-		 int valorTotal = 0;
-
-		 //Iteramos sobre los items
-		 for(...){
-            //Seleccionamos item según nuestro criterio, si el item no excede el peso, lo añadimos
-            if(...){
-                pesoTotal=...;
-                valorTotal=...;
-                solucion[]=...;
+        for (Item item : items){
+            while(valores[item.index] < item.unidades && item.peso <= pesoMax){
+                valores[item.index]++;
+                pesoMax -= item.peso;
+                valorMochila += item.valor;
             }
         }
-        return new SolucionMochila(solucion, pesoTotal, valorTotal);
+        return new SolucionMochila(valores, pm.getPesoMaximo() - pesoMax, valorMochila);
     }
-		return sm;
 
-	}
 }
