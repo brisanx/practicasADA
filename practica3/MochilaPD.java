@@ -9,28 +9,27 @@ public class MochilaPD extends Mochila {
 	int[][] matriz;
     int[] pesos;
     int[] valores;
+	int[] repeticiones;
+	int items;
 
-	
 	public SolucionMochila resolver(ProblemaMochila pm) {
-		SolucionMochila sm=null;
-		// A resolver por el alumno
-		int n = pm.size();  // n es el numero de items del problema
+		items = pm.size();  // n es el numero de items del problema
         pesos = pm.getPesos(); // pesos de solucion parcial
-        valores = pm.getValores(); // valroes de solucion parcial
-		int Objetos = valores.length;
+        valores = pm.getValores(); // valores de solucion parcial
+		repeticiones = pm.getUnidades();
 
 		int capacidad = pm.getPesoMaximo();
-		int[] cantidadObjetos = pm.getUnidades();
 		
-		matriz = new int[n+1][capacidad+1]; // matriz de solucion parcial
+		matriz = new int[items+1][capacidad+1]; // matriz de solucion parcial
 
-		creacion(n,pm.getPesoMaximo(), cantidadObjetos);
+		// creamos la tabla de subproblemas
+		creacion(items, capacidad);
 
-		int[] sol = solucion(pesos, pm.getPesoMaximo(), cantidadObjetos, n);
-		return new SolucionMochila(sol, pm.sumaPesos(sol), matriz[Objetos][capacidad]);
+		int[] sol = solucion(pesos, pm.getPesoMaximo());
+		return new SolucionMochila(sol, pm.sumaPesos(sol), matriz[items][capacidad]);
 	}
 
-	private int creacion(int n, int pesoMaximo, int[] cantidadObjetos){
+	private int creacion(int items, int pesoMaximo){
 		for(int i =0; i<=valores.length; i++){
 			for (int j=0; j<=pesoMaximo; j++){
 				if (i==0 || j==0){
@@ -40,7 +39,7 @@ public class MochilaPD extends Mochila {
 				} else if(j >= pesos[i-1]){
 					int objeto = 0;
 					int objetoOptimo = 0;
-					for(int k = 1; k<= cantidadObjetos[i-1];k++){
+					for(int k = 1; k<= repeticiones[i-1];k++){
 						if(j-(k*pesos[i-1])>=0){
 							objeto = matriz[i-1][j-(k*pesos[i-1])] + k*valores[i-1];
 						}
@@ -52,18 +51,18 @@ public class MochilaPD extends Mochila {
 				}
 			}
 		}
-		return matriz[n][pesoMaximo];
+		return matriz[items][pesoMaximo];
 	}
 
-	private int[] solucion(int[] pesos, int pesoMaximo, int[] cantidadObjetos, int n){
+	private int[] solucion(int[] pesos, int pesoMaximo){
 		int i=pesos.length;
-		int[] solucion = new int[n];
+		int[] solucion = new int[items];
 		Arrays.fill(solucion,0);
 		
 		int j=pesoMaximo;
 
 		while (i>0 && j>0){
-			while(matriz[i-1][j]<matriz[i][j] && solucion[i-1] < cantidadObjetos[i-1]){
+			while(matriz[i-1][j]<matriz[i][j] && solucion[i-1] < repeticiones[i-1]){
 				solucion[i-1] += 1;
 				j -= pesos[i-1];
 			}
